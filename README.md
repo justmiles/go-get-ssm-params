@@ -8,7 +8,8 @@ Grab values out of the AWS SSM Parameter Store
 
 ## Usage
     
-    # as JSON
+as JSON
+
     > get-ssm-params -path /dev/default -path /dev/myapp -path /dev/database
     
     {
@@ -20,7 +21,8 @@ Grab values out of the AWS SSM Parameter Store
       ]
     }
     
-    # as shell
+as shell
+
     > get-ssm-params -shell -path /dev/default -path /dev/myapp -path /dev/database
     
     export SOME_PARAMETER="some parameter value"
