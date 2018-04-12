@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -13,9 +14,10 @@ import (
 )
 
 var (
-	ssmPaths         arraySSMPaths
-	outputAsShellPtr = flag.Bool("shell", false, "optionally output shell command to export variables. otherwise, output as json")
-	regionPtr        = flag.String("region", "us-east-1", "aws region")
+	ssmPaths   arraySSMPaths
+	outputPtr  = flag.String("output", "json", "set the desired output")
+	versionPtr = flag.Bool("version", false, "show current version")
+	regionPtr  = flag.String("region", "us-east-1", "aws region")
 
 	ssmOptionWithDecryption       = true
 	ssmOptionMaxResults     int64 = 10
@@ -23,8 +25,13 @@ var (
 )
 
 func main() {
-	flag.Var(&ssmPaths, "path", "SSM Parameters path to source")
+	flag.Var(&ssmPaths, "path", "SSM Parameter path")
 	flag.Parse()
+
+	if *versionPtr {
+		fmt.Println("v1.2.0")
+		os.Exit(0)
+	}
 
 	sess := session.Must(session.NewSession())
 
@@ -71,14 +78,20 @@ func main() {
 	}
 
 	// write output
-	if *outputAsShellPtr {
+	if *outputPtr == "shell" {
 		for k, v := range output {
 			fmt.Printf(`export %s="%s"%s`, k, v, "\n")
 		}
-	} else {
+	} else if *outputPtr == "json" {
 		jsonString, err := json.MarshalIndent(output, "", "  ")
 		check(err)
 		fmt.Println(string(jsonString))
+	} else if *outputPtr == "text" {
+		for k, v := range output {
+			fmt.Printf(`%s=%s%s`, k, v, "\n")
+		}
+	} else {
+		log.Fatalf(`unknown output "%s"`, *outputPtr)
 	}
 }
 
@@ -86,8 +99,7 @@ type arraySSMPaths []string
 
 func check(err error) {
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
 
