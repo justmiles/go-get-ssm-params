@@ -41,6 +41,25 @@ as text
     MY_CONFIG_KEY=overridden
     DB_HOSTNAME=db.dev.mycompany.com
     DB_PASSWORD=password
+    
+as ECS
+
+    > get-ssm-params -output ecs -path /dev/default -path /dev/myapp
+    
+    [
+      {
+        "name":"MY_CONFIG_KEY",
+        "value":"overridden"
+      },
+      {
+        "name":"DB_HOSTNAME",
+        "value":"db.dev.mycompany.com"
+      },
+      {
+        "name":"DB_PASSWORD",
+        "value":"password"
+      }
+    ]
 
 Usage of get-ssm-params:
 

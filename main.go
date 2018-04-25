@@ -120,7 +120,7 @@ func main() {
 		sort.Slice(ecsOutput, func(i, j int) bool {
 			return ecsOutput[i].Name < ecsOutput[j].Name
 		})
-		res, err := json.Marshal(ecsOutput)
+		res, err := json.MarshalIndent(ecsOutput, "", "  ")
 		check(err)
 
 		fmt.Println(string(res))
