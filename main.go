@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -77,19 +78,54 @@ func main() {
 		}
 	}
 
-	// write output
+	// write output for shell
+	//    export key="value"
 	if *outputPtr == "shell" {
 		for k, v := range output {
 			fmt.Printf(`export %s="%s"%s`, k, v, "\n")
 		}
+
+		// write output for json
+		//    {"key":"value"}
 	} else if *outputPtr == "json" {
 		jsonString, err := json.MarshalIndent(output, "", "  ")
 		check(err)
 		fmt.Println(string(jsonString))
+
+		// write output for text
+		//    key=value
 	} else if *outputPtr == "text" {
 		for k, v := range output {
 			fmt.Printf(`%s=%s%s`, k, v, "\n")
 		}
+
+		// write output for ecs
+		//    {"name":"key", "value":"value"}
+	} else if *outputPtr == "ecs" {
+		// ECS represents indiviudal keys
+		type ECS struct {
+			Name  string `json:"name"`
+			Value string `json:"value"`
+		}
+		ecsOutput := []ECS{}
+
+		for k, v := range output {
+			ecsOutputRecord := ECS{
+				Name:  k,
+				Value: v,
+			}
+			ecsOutput = append(ecsOutput, ecsOutputRecord)
+		}
+
+		sort.Slice(ecsOutput, func(i, j int) bool {
+			return ecsOutput[i].Name < ecsOutput[j].Name
+		})
+		res, err := json.Marshal(ecsOutput)
+		check(err)
+
+		fmt.Println(string(res))
+
+		// fail unknown output
 	} else {
 		log.Fatalf(`unknown output "%s"`, *outputPtr)
 	}
