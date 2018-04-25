@@ -3,7 +3,7 @@ Grab values out of the AWS SSM Parameter Store
 
 ## Installation
 
-    sudo curl -L https://github.com/justmiles/go-get-ssm-params/releases/download/v1.2.0/get-ssm-params.v1.2.0.linux-amd64 -o /usr/local/bin/get-ssm-params
+    sudo curl -L https://github.com/justmiles/go-get-ssm-params/releases/download/v1.4.0/get-ssm-params.v1.4.0.linux-amd64 -o /usr/local/bin/get-ssm-params
     sudo chmod +x /usr/local/bin/get-ssm-params
 
 ## Usage
