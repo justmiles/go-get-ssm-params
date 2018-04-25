@@ -60,6 +60,14 @@ as ECS
         "value":"password"
       }
     ]
+    
+as terraform-ecs
+
+    > get-ssm-params -output terraform-ecs -path /dev/default -path /dev/myapp
+    
+    {
+      "JSONString": "[{\"name\":\"MY_CONFIG_KEY\",\"value\":\"overridden\"}]"
+    }
 
 Usage of get-ssm-params:
 
