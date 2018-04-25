@@ -102,28 +102,20 @@ func main() {
 		// write output for ecs
 		//    {"name":"key", "value":"value"}
 	} else if *outputPtr == "ecs" {
-		// ECS represents indiviudal keys
-		type ECS struct {
-			Name  string `json:"name"`
-			Value string `json:"value"`
-		}
-		ecsOutput := []ECS{}
-
-		for k, v := range output {
-			ecsOutputRecord := ECS{
-				Name:  k,
-				Value: v,
-			}
-			ecsOutput = append(ecsOutput, ecsOutputRecord)
-		}
-
-		sort.Slice(ecsOutput, func(i, j int) bool {
-			return ecsOutput[i].Name < ecsOutput[j].Name
-		})
-		res, err := json.MarshalIndent(ecsOutput, "", "  ")
-		check(err)
-
+		res := convertToECS(output, true)
 		fmt.Println(string(res))
+
+		// write output for terraform-ecs
+		//    { "JSONString": "[{\"name\":\"key\",\"value\":\"value\"}]"
+	} else if *outputPtr == "terraform-ecs" {
+		res := convertToECS(output, false)
+		output = map[string]string{
+			"JSONString": res,
+		}
+
+		b, err := json.MarshalIndent(output, "", "  ")
+		check(err)
+		fmt.Println(string(b))
 
 		// fail unknown output
 	} else {
@@ -146,4 +138,34 @@ func (i *arraySSMPaths) Set(value string) error {
 
 func (i *arraySSMPaths) String() string {
 	return ""
+}
+
+func convertToECS(output map[string]string, formatted bool) string {
+	type ECS struct {
+		Name  string `json:"name"`
+		Value string `json:"value"`
+	}
+	ecsOutput := []ECS{}
+
+	for k, v := range output {
+		ecsOutputRecord := ECS{
+			Name:  k,
+			Value: v,
+		}
+		ecsOutput = append(ecsOutput, ecsOutputRecord)
+	}
+
+	sort.Slice(ecsOutput, func(i, j int) bool {
+		return ecsOutput[i].Name < ecsOutput[j].Name
+	})
+
+	if formatted {
+		res, err := json.MarshalIndent(ecsOutput, "", "  ")
+		check(err)
+		return string(res)
+	}
+
+	res, err := json.Marshal(ecsOutput)
+	check(err)
+	return string(res)
 }
