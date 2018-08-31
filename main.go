@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -16,9 +17,11 @@ import (
 
 var (
 	ssmPaths   arraySSMPaths
+	key        string
 	outputPtr  = flag.String("output", "json", "set the desired output")
 	versionPtr = flag.Bool("version", false, "show current version")
 	regionPtr  = flag.String("region", "us-east-1", "aws region")
+	keyPtr     = flag.String("key", "", "if specified, gets a single key and sends value to stdout")
 
 	ssmOptionWithDecryption       = true
 	ssmOptionMaxResults     int64 = 10
@@ -39,6 +42,20 @@ func main() {
 	svc := ssm.New(sess, &aws.Config{
 		Region: regionPtr,
 	})
+
+	if keyPtr != nil {
+		if len(ssmPaths) < 1 {
+			fmt.Println("Please supply a path with -path")
+			os.Exit(1)
+		}
+		o, err := svc.GetParameter(&ssm.GetParameterInput{
+			Name:           aws.String(filepath.Join("/", ssmPaths[0], *keyPtr)),
+			WithDecryption: aws.Bool(true),
+		})
+		check(err)
+		fmt.Println(*o.Parameter.Value)
+		os.Exit(0)
+	}
 
 	output := make(map[string]string)
 
