@@ -33,7 +33,7 @@ func main() {
 	flag.Parse()
 
 	if *versionPtr {
-		fmt.Println("v1.6.0")
+		fmt.Println("v1.6.1")
 		os.Exit(0)
 	}
 
@@ -43,7 +43,7 @@ func main() {
 		Region: regionPtr,
 	})
 
-	if keyPtr != nil {
+	if *keyPtr != "" {
 		if len(ssmPaths) < 1 {
 			fmt.Println("Please supply a path with -path")
 			os.Exit(1)
