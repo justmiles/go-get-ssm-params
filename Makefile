@@ -5,3 +5,6 @@ default:
 	env GOOS=darwin GOARCH=amd64 go build -o build/get-ssm-params.$(VERSION).darwin-amd64
 
 build: default
+
+tag:
+	git tag $(VERSION)
