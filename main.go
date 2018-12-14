@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"text/template"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -16,12 +17,13 @@ import (
 )
 
 var (
-	ssmPaths   arraySSMPaths
-	key        string
-	outputPtr  = flag.String("output", "json", "set the desired output")
-	versionPtr = flag.Bool("version", false, "show current version")
-	regionPtr  = flag.String("region", "us-east-1", "aws region")
-	keyPtr     = flag.String("key", "", "if specified, gets a single key and sends value to stdout")
+	ssmPaths    arraySSMPaths
+	key         string
+	outputPtr   = flag.String("output", "json", "set the desired output")
+	versionPtr  = flag.Bool("version", false, "show current version")
+	regionPtr   = flag.String("region", "us-east-1", "aws region")
+	keyPtr      = flag.String("key", "", "if specified, gets a single key and sends value to stdout")
+	templatePtr = flag.String("template", "", "if specified, renders custom output from a template file")
 
 	ssmOptionWithDecryption       = true
 	ssmOptionMaxResults     int64 = 10
@@ -33,7 +35,7 @@ func main() {
 	flag.Parse()
 
 	if *versionPtr {
-		fmt.Println("v1.6.1")
+		fmt.Println("v1.6.2")
 		os.Exit(0)
 	}
 
@@ -95,9 +97,17 @@ func main() {
 		}
 	}
 
-	// write output for shell
-	//    export key="value"
-	if *outputPtr == "shell" {
+	// write custom template
+	if *templatePtr != "" {
+		t, err := template.ParseFiles(*templatePtr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		t.Execute(os.Stdout, output)
+
+		// write output for shell
+		//    export key="value"
+	} else if *outputPtr == "shell" {
 		for k, v := range output {
 			fmt.Printf(`export %s="%s"%s`, k, v, "\n")
 		}
