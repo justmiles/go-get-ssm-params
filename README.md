@@ -68,18 +68,26 @@ as terraform-ecs
     {
       "JSONString": "[{\"name\":\"MY_CONFIG_KEY\",\"value\":\"overridden\"}]"
     }
+    
+as a custom template
+    
+    > echo "The database hostname is {{.DB_HOSTNAME}} and the password is {{.DB_PASSWORD}}." > example-template.tpl
+    > get-ssm-params -template example-template.tpl -path /dev/default -path /dev/myapp
+    
+    The database hostname is db.dev.mycompany.com and the password is password.
 
 Usage of get-ssm-params:
 
-    -path value
-        SSM Parameter path
-
+    -key string
+        if specified, gets a single key and sends value to stdout
     -output string
         set the desired output (default "json")
-        
+    -path value
+        SSM Parameter path
     -region string
         aws region (default "us-east-1")
-        
+    -template string
+        if specified, renders custom output from a template file
     -version
         show current version
 
