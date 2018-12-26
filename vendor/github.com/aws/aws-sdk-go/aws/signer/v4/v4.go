@@ -42,7 +42,7 @@
 // the URL.Opaque or URL.RawPath. The SDK will use URL.Opaque first and then
 // call URL.EscapedPath() if Opaque is not set.
 //
-// If signing a request intended for HTTP2 server, and you're using Go 1.6.2
+// If signing a request intended for HTTP2 server, and you're using Go 1.7.0
 // through 1.7.4 you should use the URL.RawPath as the pre-escaped form of the
 // request URL. https://github.com/golang/go/issues/16847 points to a bug in
 // Go pre 1.8 that fails to make HTTP2 requests using absolute URL in the HTTP

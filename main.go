@@ -21,7 +21,6 @@ var (
 	key         string
 	outputPtr   = flag.String("output", "json", "set the desired output")
 	versionPtr  = flag.Bool("version", false, "show current version")
-	regionPtr   = flag.String("region", "us-east-1", "aws region")
 	keyPtr      = flag.String("key", "", "if specified, gets a single key and sends value to stdout")
 	templatePtr = flag.String("template", "", "if specified, renders custom output from a template file")
 
@@ -35,15 +34,15 @@ func main() {
 	flag.Parse()
 
 	if *versionPtr {
-		fmt.Println("v1.6.2")
+		fmt.Println("v1.7.0")
 		os.Exit(0)
 	}
 
-	sess := session.Must(session.NewSession())
+  sess := session.Must(session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	}))
 
-	svc := ssm.New(sess, &aws.Config{
-		Region: regionPtr,
-	})
+  svc := ssm.New(sess)
 
 	if *keyPtr != "" {
 		if len(ssmPaths) < 1 {
