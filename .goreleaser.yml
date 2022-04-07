@@ -1,0 +1,51 @@
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+project_name: get-ssm-params
+
+builds:
+- env:
+  - CGO_ENABLED=0
+  goos:
+    - darwin
+    - windows
+    - linux
+  binary: get-ssm-params
+
+archives:
+- replacements:
+    darwin: Darwin
+    linux: Linux
+    windows: Windows
+    386: i386
+    amd64: x86_64
+  format_overrides:
+    - goos: windows
+      format: zip
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+
+release:
+  disable: false
+
+brews:
+  -
+    tap:
+      owner: chrispruitt
+      name: homebrew-tap
+    folder: Formula
+    commit_author:
+      name: goreleaserbot
+      email: goreleaser@carlosbecker.com
+    homepage: "https://github.com/justmiles/go-get-ssm-params"
+    license: "Mozilla Public License Version 2.0"
