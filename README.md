@@ -6,6 +6,10 @@ Grab values out of the AWS SSM Parameter Store
     sudo curl -L https://github.com/justmiles/go-get-ssm-params/releases/download/v1.6.1/get-ssm-params.v1.6.1.linux-amd64 -o /usr/local/bin/get-ssm-params
     sudo chmod +x /usr/local/bin/get-ssm-params
 
+Homebrew
+
+    brew install chrispruitt/tap/get-ssm-params
+
 ## Usage
 Group your parameters in SSM by path. When you retrieve them with get-ssm-params, parameters in latest path you provide will overwrite any previous ones. For the examples below, this is what is in SSM:
 
